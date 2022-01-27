@@ -56,9 +56,14 @@ export const UserMutation = extendType({
         email: nonNull(stringArg()),
         password: nonNull(stringArg()),
       },
+      validate: ({ string }, _args, _ctx) => ({
+        email: string().required(),
+        password: string().required(),
+      }),
       async resolve(_root, { email, password }, { auth }) {
         const { token } = await auth.attempt(email, password)
-        return { ...auth.user!, token: token }
+        const user = await auth.user
+        return { ...{ token }, ...user?.$attributes }
       },
     })
   },

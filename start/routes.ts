@@ -32,6 +32,7 @@ Route.get('/', async () => {
 })
 Route.any('/graphql', async (ctx: HttpContextContract) => {
   // await server.start()
+  server.config.context.auth = ctx.auth
 
   return server.handle(
     ctx,
