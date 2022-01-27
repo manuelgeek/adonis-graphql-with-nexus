@@ -19,7 +19,15 @@
 */
 
 import Route from '@ioc:Adonis/Core/Route'
+import server from '@ioc:App/GraphQL/Server'
+import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 
 Route.get('/', async () => {
   return { hello: 'world' }
+})
+Route.any('/graphql', async (ctx: HttpContextContract) => {
+  return server.handle(
+    ctx,
+    ctx.request.method() === 'GET' || ctx.request.types().includes('text/html') // Show landing screen in this case
+  )
 })
