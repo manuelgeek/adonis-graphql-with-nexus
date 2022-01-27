@@ -4,7 +4,8 @@
  */
 
 
-import type { Context } from "App/data/context"
+import type { Context } from "./data/context"
+import type { ValidateResolver } from "nexus-validate"
 
 
 
@@ -164,6 +165,10 @@ declare global {
   interface NexusGenPluginInputTypeConfig<TypeName extends string> {
   }
   interface NexusGenPluginFieldConfig<TypeName extends string, FieldName extends string> {
+    /**
+     * Validate mutation arguments.
+     */
+    validate?: ValidateResolver<TypeName, FieldName>
   }
   interface NexusGenPluginInputFieldConfig<TypeName extends string, FieldName extends string> {
   }

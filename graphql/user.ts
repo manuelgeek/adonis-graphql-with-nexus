@@ -23,6 +23,20 @@ export const UserMutation = extendType({
         email: nonNull(stringArg()),
         password: nonNull(stringArg()),
       },
+      validate: ({ string }, args, _ctx) => ({
+        username: string()
+          .required()
+          .test('user', `user with ${args.username} already exists`, async (username) => {
+            return !(await UserModel.findBy('username', username))
+          }),
+        email: string()
+          .email()
+          .required()
+          .test('user', `user with ${args.email} already exists`, async (email) => {
+            return !(await UserModel.findBy('email', email))
+          }),
+        password: string().min(6).required(),
+      }),
       async resolve(
         _root,
         { username, email, password }: { username: string; email: string; password: string },

@@ -20,28 +20,9 @@
 
 import Route from '@ioc:Adonis/Core/Route'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
-import { makeSchema } from 'nexus'
-import * as types from '../graphql'
-import { join } from 'path'
 import { GraphQLServer } from '@91codes/adonis-graphql'
-import { context } from '../context'
-
-const schema = makeSchema({
-  // GraphQL types that will be used to construct your GraphQL schema.
-  types,
-  outputs: {
-    // Output path to where nexus should write the generated TypeScript definition types derived from your schema. This is mandatory to benefit from Nexus' type-safety.
-    typegen: join(__dirname, '..', 'nexus-typegen.ts'),
-    // Output path to where nexus should write the SDL (schema definition language) version of your GraphQL schema.
-    schema: join(__dirname, '..', 'schema.GraphQL'),
-  },
-  contextType: {
-    // Path to the module where the context type is exported
-    module: join(__dirname, '..', 'context.ts'),
-    // Name of the export in that module
-    export: 'Context',
-  },
-})
+import { context } from 'App/data/context'
+import { schema } from 'App/data/schema'
 
 const server = new GraphQLServer({ schema, context })
 server.start()
