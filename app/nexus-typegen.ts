@@ -6,6 +6,7 @@
 
 import type { Context } from "./data/context"
 import type { ValidateResolver } from "nexus-validate"
+import type { FieldAuthorizeResolver } from "nexus/dist/plugins/fieldAuthorizePlugin"
 
 
 
@@ -32,10 +33,11 @@ export interface NexusGenObjects {
   Mutation: {};
   Query: {};
   User: { // root type
-    email?: string | null; // String
+    email: string; // String!
     id: number; // Int!
+    message?: string | null; // String
     token?: string | null; // String
-    username?: string | null; // String
+    username: string; // String!
   }
 }
 
@@ -53,16 +55,18 @@ export interface NexusGenFieldTypes {
   Mutation: { // field return type
     createUser: NexusGenRootTypes['User']; // User!
     userLogin: NexusGenRootTypes['User'] | null; // User
+    userLogout: NexusGenRootTypes['User'] | null; // User
   }
   Query: { // field return type
     user: NexusGenRootTypes['User'] | null; // User
     users: Array<NexusGenRootTypes['User'] | null> | null; // [User]
   }
   User: { // field return type
-    email: string | null; // String
+    email: string; // String!
     id: number; // Int!
+    message: string | null; // String
     token: string | null; // String
-    username: string | null; // String
+    username: string; // String!
   }
 }
 
@@ -70,6 +74,7 @@ export interface NexusGenFieldTypeNames {
   Mutation: { // field return type name
     createUser: 'User'
     userLogin: 'User'
+    userLogout: 'User'
   }
   Query: { // field return type name
     user: 'User'
@@ -78,6 +83,7 @@ export interface NexusGenFieldTypeNames {
   User: { // field return type name
     email: 'String'
     id: 'Int'
+    message: 'String'
     token: 'String'
     username: 'String'
   }
@@ -169,6 +175,15 @@ declare global {
      * Validate mutation arguments.
      */
     validate?: ValidateResolver<TypeName, FieldName>
+    /**
+     * Authorization for an individual field. Returning "true"
+     * or "Promise<true>" means the field can be accessed.
+     * Returning "false" or "Promise<false>" will respond
+     * with a "Not Authorized" error for the field.
+     * Returning or throwing an error will also prevent the
+     * resolver from executing.
+     */
+    authorize?: FieldAuthorizeResolver<TypeName, FieldName>
   }
   interface NexusGenPluginInputFieldConfig<TypeName extends string, FieldName extends string> {
   }

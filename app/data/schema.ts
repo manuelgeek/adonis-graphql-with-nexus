@@ -1,4 +1,4 @@
-import { makeSchema } from 'nexus'
+import { fieldAuthorizePlugin, makeSchema } from 'nexus'
 import * as types from '../../graphql'
 import { join } from 'path'
 import { validatePlugin } from 'nexus-validate'
@@ -18,5 +18,5 @@ export const schema = makeSchema({
     // Name of the export in that module
     export: 'Context',
   },
-  plugins: [validatePlugin()],
+  plugins: [validatePlugin(), fieldAuthorizePlugin()],
 })

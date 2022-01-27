@@ -5,9 +5,10 @@ export const User = objectType({
   name: 'User',
   definition(t) {
     t.nonNull.int('id')
-    t.string('username')
-    t.string('email')
+    t.nonNull.string('username')
+    t.nonNull.string('email')
     t.string('token')
+    t.string('message')
     // t.string('posts')
   },
 })
@@ -49,7 +50,7 @@ export const UserMutation = extendType({
         })
       },
     })
-    // delete a company by id
+    // login
     t.field('userLogin', {
       type: 'User',
       args: {
@@ -60,42 +61,48 @@ export const UserMutation = extendType({
         email: string().required(),
         password: string().required(),
       }),
+      // @ts-ignore
       async resolve(_root, { email, password }, { auth }) {
         const { token } = await auth.attempt(email, password)
         const user = await auth.user
         return { ...{ token }, ...user?.$attributes }
       },
     })
+    // logout
+    t.field('userLogout', {
+      type: 'User',
+      authorize: async (_root, _args, { auth }) => {
+        return auth.use('api').check()
+        // return auth.use('api').isLoggedIn
+      },
+      async resolve(_root, _args, { auth }) {
+        await auth.logout()
+
+        return { message: 'Logged out' }
+      },
+    })
   },
 })
 
-export const CompanyQuery = extendType({
+export const UserQuery = extendType({
   type: 'Query',
   definition(t) {
-    // get all companies
+    // get all users
     t.list.field('users', {
       type: 'User',
-      resolve(_root, args, _ctx) {
-        console.log(args)
-        return [{ id: 1, username: 'manu', email: 'example@mail.com' }]
+      resolve(_root, _args, _ctx) {
+        return UserModel.all()
       },
     })
-    // get company by id
+    // get user by id
     t.field('user', {
       type: 'User',
       args: {
         id: nonNull(intArg()),
       },
-      resolve(_root, _args, ctx) {
-        console.log(ctx)
-        return { id: 1, username: 'manu', email: 'example@mail.com' }
+      async resolve(_root, args, _ctx) {
+        return await UserModel.find(args.id)
       },
     })
-    // t.list.field('roles', {
-    //   type: 'Role',
-    //   resolve(_root, _args, ctx) {
-    //     return ctx.db.role.findMany();
-    //   },
-    // });
   },
 })
